@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "Company": {
+      "title": "Company",
+      "description": "A company entry in the B2B directory",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["Producent", "Usługi"] },
+        "industry": { "type": "string" },
+        "location": { "type": "string" },
+        "postalCode": { "type": "string" },
+        "productionType": { "type": "string" },
+        "machineryPark": { "type": "array", "items": { "type": "string" } },
+        "certifications": { "type": "array", "items": { "type": "string" } },
+        "moq": { "type": "string" },
+        "leadTimeAvg": { "type": "string" },
+        "complianceStandards": { "type": "array", "items": { "type": "string" } },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "phone": { "type": "string" },
+            "website": { "type": "string" }
+          }
+        },
+        "employeeCount": { "type": "number" },
+        "scale": { "type": "string" },
+        "materials": { "type": "array", "items": { "type": "string" } },
+        "technologies": { "type": "array", "items": { "type": "string" } },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "featured": { "type": "boolean" },
+        "ownerUid": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "type", "industry", "location", "postalCode", "ownerUid"]
+    }
+  },
+  "firestore": {
+    "/companies/{companyId}": {
+      "schema": "Company",
+      "description": "Collection of companies"
+    }
+  }
+}

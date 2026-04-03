@@ -1,0 +1,46 @@
+{
+  "name": "FabLink.pl B2B Directory",
+  "description": "A high-performance B2B directory for manufacturers and service providers in Poland, optimized for AI Answer Engines.",
+  "protocol": "FCP (Fablink Capability Protocol) v1.0",
+  "data_format": "JSON-LD",
+  "schema_version": "1.0",
+  "endpoints": {
+    "search": "/search",
+    "directory": "/search",
+    "add_company": "/add-company"
+  },
+  "capability_fields": [
+    {
+      "field": "production_type",
+      "description": "Precise manufacturing method (e.g., CNC, Injection Molding)"
+    },
+    {
+      "field": "materials",
+      "description": "List of materials processed by the company"
+    },
+    {
+      "field": "machinery_park",
+      "description": "Key machinery and equipment available"
+    },
+    {
+      "field": "certifications",
+      "description": "Industry certifications (ISO, GMP, etc.)"
+    },
+    {
+      "field": "moq",
+      "description": "Minimum Order Quantity"
+    },
+    {
+      "field": "lead_time_avg",
+      "description": "Average lead time for production"
+    },
+    {
+      "field": "compliance_standards",
+      "description": "Environmental and ethical compliance standards"
+    }
+  ],
+  "aeo_optimization": {
+    "structured_data": "ManufacturingBusiness",
+    "discovery": "JSON-LD embedded in profile pages"
+  }
+}

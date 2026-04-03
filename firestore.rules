@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: companies
+    // Document ID: auto-generated or manual
+    // Fields:
+    //   - name: string (required)
+    //   - description: string
+    //   - type: string (Producent/Usługi)
+    //   - industry: string
+    //   - location: string
+    //   - postalCode: string
+    //   - productionType: string
+    //   - machineryPark: list
+    //   - certifications: list
+    //   - moq: string
+    //   - leadTimeAvg: string
+    //   - complianceStandards: list
+    //   - contact: map (email, phone, website)
+    //   - employeeCount: number
+    //   - scale: string
+    //   - materials: list
+    //   - technologies: list
+    //   - images: list
+    //   - featured: bool
+    //   - ownerUid: string (required, immutable)
+    //   - createdAt: number
+    //   - updatedAt: number
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(ownerUid) {
+      return isAuthenticated() && request.auth.uid == ownerUid;
+    }
+
+    function isValidCompany(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.type in ['Producent', 'Usługi'] &&
+             data.industry is string &&
+             data.location is string &&
+             data.postalCode is string &&
+             data.postalCode.matches("^\\d{2}-\\d{3}$") &&
+             data.ownerUid is string &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    match /companies/{companyId} {
+      allow read: if true; // Public directory
+      allow create: if isAuthenticated() && isValidCompany(request.resource.data);
+      allow update: if isAuthenticated() && 
+                    isOwner(resource.data.ownerUid) && 
+                    isValidCompany(request.resource.data) &&
+                    request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if isAuthenticated() && isOwner(resource.data.ownerUid);
+    }
+  }
+}

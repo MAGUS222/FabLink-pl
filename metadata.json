@@ -1,0 +1,5 @@
+{
+  "name": "FabLink - Katalog B2B",
+  "description": "Nowoczesny katalog producentów i firm usługowych B2B w Polsce. Znajdź sprawdzonych partnerów biznesowych.",
+  "requestFramePermissions": ["geolocation"]
+}
