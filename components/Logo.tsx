@@ -14,10 +14,10 @@ const Logo: React.FC<LogoProps> = ({ className = "h-10", showText = true, isScro
   };
 
   const nodeVariants = {
-    top: { initial: { y: 0 }, hover: { y: -6 } },
-    bottom: { initial: { y: 0 }, hover: { y: 6 } },
-    left: { initial: { x: 0 }, hover: { x: -6 } },
-    right: { initial: { x: 0 }, hover: { x: 6 } }
+    top: { initial: { y: 0 }, hover: { y: -8 } },
+    bottom: { initial: { y: 0 }, hover: { y: 8 } },
+    left: { initial: { x: 0 }, hover: { x: -8 } },
+    right: { initial: { x: 0 }, hover: { x: 8 } }
   };
 
   return (
@@ -28,8 +28,8 @@ const Logo: React.FC<LogoProps> = ({ className = "h-10", showText = true, isScro
       variants={containerVariants}
     >
       <svg 
-        viewBox="0 0 100 100" 
-        className="h-full w-auto"
+        viewBox="-10 -10 120 120" 
+        className="h-full w-auto overflow-visible"
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -41,44 +41,50 @@ const Logo: React.FC<LogoProps> = ({ className = "h-10", showText = true, isScro
           strokeLinecap="round"
         />
         
-        {/* Interlocking Links (Chain) */}
-        <g transform="translate(32, 32) scale(0.36)">
-          <path 
-            d="M75.5 24.5C84.3 33.3 84.3 47.7 75.5 56.5L56.5 75.5C47.7 84.3 33.3 84.3 24.5 75.5C15.7 66.7 15.7 52.3 24.5 43.5L34 34" 
-            stroke="currentColor" 
-            strokeWidth="12" 
-            strokeLinecap="round"
+        {/* Interlocking Links (Chain) - Two distinct links */}
+        <g transform="translate(50, 50) rotate(-45) scale(0.85)">
+          {/* Bottom-Left Link */}
+          <rect 
+            x="-24" y="-10" width="34" height="20" rx="10" 
+            stroke="currentColor" strokeWidth="8" strokeLinecap="round"
           />
+          {/* Top-Right Link */}
+          <rect 
+            x="-10" y="-10" width="34" height="20" rx="10" 
+            stroke="currentColor" strokeWidth="8" strokeLinecap="round"
+            className="fill-white" // To create the interlocking effect
+          />
+          {/* Redraw part of the first link to complete the interlock look */}
           <path 
-            d="M66 66L75.5 56.5C84.3 47.7 84.3 33.3 75.5 24.5C66.7 15.7 52.3 15.7 43.5 24.5L24.5 43.5C15.7 52.3 15.7 66.7 24.5 75.5C33.3 84.3 47.7 84.3 56.5 75.5L66 66" 
-            stroke="currentColor" 
-            strokeWidth="12" 
-            strokeLinecap="round"
+            d="M-10 0 A10 10 0 0 1 -20 -10" 
+            stroke="currentColor" strokeWidth="8" strokeLinecap="round"
+            fill="none"
+            transform="translate(0, 0)"
           />
         </g>
 
         {/* Top Node */}
         <motion.g variants={nodeVariants.top} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
-          <line x1="50" y1="22" x2="50" y2="10" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-          <circle cx="50" cy="10" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
+          <line x1="50" y1="22" x2="50" y2="8" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="50" cy="8" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
         </motion.g>
         
         {/* Bottom Node */}
         <motion.g variants={nodeVariants.bottom} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
-          <line x1="50" y1="78" x2="50" y2="90" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-          <circle cx="50" cy="90" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
+          <line x1="50" y1="78" x2="50" y2="92" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="50" cy="92" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
         </motion.g>
         
         {/* Left Node */}
         <motion.g variants={nodeVariants.left} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
-          <line x1="20" y1="50" x2="8" y2="50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-          <circle cx="8" cy="50" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
+          <line x1="20" y1="50" x2="6" y2="50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="6" cy="50" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
         </motion.g>
         
         {/* Right Node */}
         <motion.g variants={nodeVariants.right} transition={{ type: "spring", stiffness: 300, damping: 15 }}>
-          <line x1="80" y1="50" x2="92" y2="50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-          <circle cx="92" cy="50" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
+          <line x1="80" y1="50" x2="94" y2="50" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+          <circle cx="94" cy="50" r="5" fill="white" stroke="currentColor" strokeWidth="4" />
         </motion.g>
       </svg>
       
