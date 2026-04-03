@@ -89,12 +89,12 @@ const App: React.FC = () => {
               <CategoryGrid onSelect={handleIndustrySelect} />
 
               {/* Featured Section */}
-              <section className="py-20 bg-industrial-900/30">
+              <section className="py-20 bg-slate-50 border-y border-slate-200">
                 <div className="max-w-7xl mx-auto px-6">
                   <div className="flex items-end justify-between mb-12">
                     <div>
-                      <h2 className="text-3xl md:text-4xl mb-4">Polecane Firmy</h2>
-                      <p className="text-slate-400">Zweryfikowani liderzy w swoich branżach.</p>
+                      <h2 className="text-3xl md:text-4xl mb-4 text-slate-900 font-bold">Polecane Firmy</h2>
+                      <p className="text-slate-500 font-medium">Zweryfikowani liderzy w swoich branżach.</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -112,7 +112,7 @@ const App: React.FC = () => {
               {/* Recently Added */}
               <section className="py-20">
                 <div className="max-w-7xl mx-auto px-6">
-                  <h2 className="text-3xl md:text-4xl mb-12">Ostatnio dodane</h2>
+                  <h2 className="text-3xl md:text-4xl mb-12 text-slate-900 font-bold">Ostatnio dodane</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {recentCompanies.map(company => (
                       <CompanyCard 
@@ -144,9 +144,9 @@ const App: React.FC = () => {
                 {/* Results */}
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl text-white">
+                    <h2 className="text-2xl text-slate-900 font-bold">
                       Wyniki wyszukiwania 
-                      <span className="text-slate-500 text-lg ml-3">({filteredCompanies.length})</span>
+                      <span className="text-slate-400 text-lg ml-3 font-medium">({filteredCompanies.length})</span>
                     </h2>
                     <div className="flex items-center gap-4">
                       {selectedForRFQ.length > 0 && (
@@ -157,11 +157,11 @@ const App: React.FC = () => {
                           Wyślij RFQ ({selectedForRFQ.length})
                         </button>
                       )}
-                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                      <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
                         Sortuj: 
-                        <select className="bg-transparent text-white font-bold outline-none cursor-pointer">
-                          <option>Najnowsze</option>
-                          <option>Alfabetycznie</option>
+                        <select className="bg-transparent text-slate-900 font-bold outline-none cursor-pointer">
+                          <option className="text-slate-900">Najnowsze</option>
+                          <option className="text-slate-900">Alfabetycznie</option>
                         </select>
                       </div>
                     </div>
@@ -176,7 +176,7 @@ const App: React.FC = () => {
                               type="checkbox" 
                               checked={selectedForRFQ.includes(company.id)}
                               onChange={() => toggleRFQSelection(company.id)}
-                              className="w-5 h-5 rounded border-white/10 bg-industrial-900 text-accent-blue focus:ring-accent-blue cursor-pointer"
+                              className="w-5 h-5 rounded border-slate-300 bg-white text-accent-blue focus:ring-accent-blue cursor-pointer shadow-sm"
                             />
                           </div>
                           <CompanyCard 
@@ -187,13 +187,13 @@ const App: React.FC = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="py-20 text-center glass-panel rounded-3xl">
-                      <Search className="w-16 h-16 text-slate-700 mx-auto mb-6" />
-                      <h3 className="text-2xl text-white mb-2">Brak wyników</h3>
-                      <p className="text-slate-500">Spróbuj zmienić filtry wyszukiwania.</p>
+                    <div className="py-20 text-center bg-white border border-slate-200 rounded-3xl shadow-sm">
+                      <Search className="w-16 h-16 text-slate-300 mx-auto mb-6" />
+                      <h3 className="text-2xl text-slate-900 mb-2 font-bold">Brak wyników</h3>
+                      <p className="text-slate-500 font-medium">Spróbuj zmienić filtry wyszukiwania.</p>
                       <button 
                         onClick={() => setFilters({ query: '', type: 'Wszystkie', industry: '', location: '', material: '' })}
-                        className="mt-8 text-accent-blue hover:underline"
+                        className="mt-8 text-accent-blue hover:underline font-bold"
                       >
                         Wyczyść wszystkie filtry
                       </button>

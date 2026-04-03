@@ -35,9 +35,9 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelect }) => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
               onClick={() => onSelect(industry.name)}
-              className="group relative p-8 glass-panel rounded-2xl text-left hover:border-accent-blue/50 transition-all overflow-hidden"
+              className="group relative p-8 bg-white border border-slate-200 rounded-2xl text-left hover:border-accent-blue/50 hover:shadow-lg transition-all overflow-hidden shadow-sm"
             >
-              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-slate-900">
                 <IconComponent className="w-32 h-32" />
               </div>
               
@@ -45,10 +45,10 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelect }) => {
                 <IconComponent className="w-6 h-6" />
               </div>
               
-              <h3 className="text-lg font-bold text-white group-hover:text-accent-blue transition-colors">
+              <h3 className="text-lg font-bold text-slate-900 group-hover:text-accent-blue transition-colors">
                 {industry.name}
               </h3>
-              <p className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 mt-2 font-medium">
                 Zobacz firmy
               </p>
             </motion.button>

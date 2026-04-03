@@ -49,7 +49,7 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="bg-industrial-900 border border-white/10 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl"
+        className="bg-white border border-slate-200 w-full max-w-5xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl"
       >
         {/* FCP JSON-LD Injection */}
         <script type="application/ld+json">
@@ -64,7 +64,7 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-industrial-900 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
           
           <button
             onClick={onClose}
@@ -76,19 +76,19 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
           <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${company.type === 'Producent' ? 'bg-accent-blue text-white' : 'bg-industrial-700 text-slate-200'}`}>
+                <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${company.type === 'Producent' ? 'bg-accent-blue text-white' : 'bg-slate-800 text-slate-100'}`}>
                   {company.type}
                 </span>
-                <span className="text-slate-300 flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <span className="text-slate-700 flex items-center gap-2 text-sm font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
                   Zweryfikowany profil
                 </span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-display text-white">{company.name}</h2>
+              <h2 className="text-4xl md:text-5xl font-display text-slate-900">{company.name}</h2>
             </div>
             
             {isOwner && (
-              <button className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-xl font-bold flex items-center gap-2 transition-all border border-white/10">
+              <button className="px-6 py-3 bg-white/80 hover:bg-white backdrop-blur-md text-slate-900 rounded-xl font-bold flex items-center gap-2 transition-all border border-slate-200 shadow-sm">
                 <Briefcase className="w-5 h-5" />
                 Edytuj wpis
               </button>
@@ -97,15 +97,15 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 md:p-12">
+        <div className="flex-1 overflow-y-auto p-8 md:p-12 bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Main Info */}
             <div className="lg:col-span-2 space-y-10">
               <section>
-                <h3 className="text-xl text-white mb-4 flex items-center gap-2">
+                <h3 className="text-xl text-slate-900 mb-4 flex items-center gap-2 font-bold">
                   O firmie
                 </h3>
-                <p className="text-slate-400 leading-relaxed text-lg">
+                <p className="text-slate-600 leading-relaxed text-lg">
                   {company.description}
                 </p>
               </section>
@@ -113,10 +113,10 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {company.materials && (
                   <section>
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">Materiały</h4>
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Materiały</h4>
                     <div className="flex flex-wrap gap-2">
                       {company.materials.map(m => (
-                        <span key={m} className="px-3 py-1.5 bg-industrial-800 text-slate-300 rounded-lg text-sm">
+                        <span key={m} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm border border-slate-200">
                           {m}
                         </span>
                       ))}
@@ -125,10 +125,10 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
                 )}
                 {company.technologies && (
                   <section>
-                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">Technologie</h4>
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Technologie</h4>
                     <div className="flex flex-wrap gap-2">
                       {company.technologies.map(t => (
-                        <span key={t} className="px-3 py-1.5 bg-accent-blue/10 text-accent-blue rounded-lg text-sm">
+                        <span key={t} className="px-3 py-1.5 bg-blue-50 text-accent-blue rounded-lg text-sm border border-blue-100">
                           {t}
                         </span>
                       ))}
@@ -138,34 +138,34 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
               </div>
 
               <section>
-                <h3 className="text-xl text-white mb-6 flex items-center gap-2">
+                <h3 className="text-xl text-slate-900 mb-6 flex items-center gap-2 font-bold">
                   <Cpu className="w-5 h-5 text-accent-blue" />
                   FCP (Fablink Capability Protocol)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-industrial-800/50 rounded-xl border border-white/5">
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Typ produkcji</p>
-                    <p className="text-white font-medium">{company.productionType || 'Nie określono'}</p>
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Typ produkcji</p>
+                    <p className="text-slate-900 font-bold">{company.productionType || 'Nie określono'}</p>
                   </div>
-                  <div className="p-4 bg-industrial-800/50 rounded-xl border border-white/5">
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Park maszynowy</p>
-                    <p className="text-white text-sm">{company.machineryPark?.join(', ') || 'Nie określono'}</p>
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Park maszynowy</p>
+                    <p className="text-slate-900 text-sm font-medium">{company.machineryPark?.join(', ') || 'Nie określono'}</p>
                   </div>
-                  <div className="p-4 bg-industrial-800/50 rounded-xl border border-white/5">
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Certyfikaty</p>
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Certyfikaty</p>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {company.certifications?.map(c => (
-                        <span key={c} className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded border border-green-500/20">
+                        <span key={c} className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded border border-green-200">
                           {c}
                         </span>
                       )) || 'Brak'}
                     </div>
                   </div>
-                  <div className="p-4 bg-industrial-800/50 rounded-xl border border-white/5">
-                    <p className="text-xs text-slate-500 uppercase font-bold mb-1">Standardy Compliance</p>
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p className="text-xs text-slate-400 uppercase font-bold mb-1">Standardy Compliance</p>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {company.complianceStandards?.map(s => (
-                        <span key={s} className="px-2 py-0.5 bg-accent-blue/10 text-accent-blue text-[10px] font-bold rounded border border-accent-blue/20">
+                        <span key={s} className="px-2 py-0.5 bg-blue-100 text-accent-blue text-[10px] font-bold rounded border border-blue-200">
                           {s}
                         </span>
                       )) || 'Brak'}
@@ -175,18 +175,18 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
               </section>
 
               <section>
-                <h3 className="text-xl text-white mb-6 flex items-center gap-2">
+                <h3 className="text-xl text-slate-900 mb-6 flex items-center gap-2 font-bold">
                   Galeria
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {company.images.map((img, i) => (
-                    <div key={i} className="aspect-square rounded-xl overflow-hidden bg-industrial-800">
+                    <div key={i} className="aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
                       <img src={img} alt={`${company.name} ${i}`} className="w-full h-full object-cover hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
                     </div>
                   ))}
-                  <div className="aspect-square rounded-xl border-2 border-dashed border-industrial-700 flex flex-col items-center justify-center text-industrial-600">
+                  <div className="aspect-square rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
                     <ImageIcon className="w-8 h-8 mb-2" />
-                    <span className="text-xs">Więcej zdjęć</span>
+                    <span className="text-xs font-medium">Więcej zdjęć</span>
                   </div>
                 </div>
               </section>
@@ -194,56 +194,56 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
 
             {/* Sidebar / Contact */}
             <div className="space-y-8">
-              <div className="glass-panel p-8 rounded-2xl space-y-6">
-                <h3 className="text-lg text-white font-bold">Dane kontaktowe</h3>
+              <div className="bg-slate-50 border border-slate-200 p-8 rounded-2xl space-y-6 shadow-sm">
+                <h3 className="text-lg text-slate-900 font-bold">Dane kontaktowe</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <MapPin className="w-5 h-5 text-accent-blue shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-slate-300">Lokalizacja</p>
-                      <p className="text-sm text-slate-400">{company.postalCode} {company.location}</p>
+                      <p className="text-sm font-bold text-slate-700">Lokalizacja</p>
+                      <p className="text-sm text-slate-600">{company.postalCode} {company.location}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-4">
                     <Phone className="w-5 h-5 text-accent-blue shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-slate-300">Telefon</p>
-                      <p className="text-sm text-slate-400">{company.contact.phone}</p>
+                      <p className="text-sm font-bold text-slate-700">Telefon</p>
+                      <p className="text-sm text-slate-600">{company.contact.phone}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <Mail className="w-5 h-5 text-accent-blue shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-slate-300">E-mail</p>
-                      <p className="text-sm text-slate-400">{company.contact.email}</p>
+                      <p className="text-sm font-bold text-slate-700">E-mail</p>
+                      <p className="text-sm text-slate-600">{company.contact.email}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <Globe className="w-5 h-5 text-accent-blue shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-slate-300">Strona WWW</p>
-                      <a href={company.contact.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-blue hover:underline">
+                      <p className="text-sm font-bold text-slate-700">Strona WWW</p>
+                      <a href={company.contact.website} target="_blank" rel="noopener noreferrer" className="text-sm text-accent-blue hover:underline font-medium">
                         {company.contact.website.replace('https://', '')}
                       </a>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
+                <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-200">
                   <div className="text-center">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">MOQ</p>
-                    <div className="flex items-center justify-center gap-1 text-white font-bold">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">MOQ</p>
+                    <div className="flex items-center justify-center gap-1 text-slate-900 font-bold">
                       <Package className="w-3 h-3 text-accent-blue" />
                       {company.moq || 'N/A'}
                     </div>
                   </div>
                   <div className="text-center">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold mb-1">Lead Time</p>
-                    <div className="flex items-center justify-center gap-1 text-white font-bold">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Lead Time</p>
+                    <div className="flex items-center justify-center gap-1 text-slate-900 font-bold">
                       <Clock className="w-3 h-3 text-accent-blue" />
                       {company.leadTimeAvg || 'N/A'}
                     </div>
@@ -258,9 +258,9 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
                 </button>
               </div>
 
-              <div className="p-6 bg-industrial-800/50 rounded-2xl border border-white/5">
-                <p className="text-xs text-slate-500 mb-2 uppercase tracking-widest font-bold">Skala działalności</p>
-                <p className="text-white">{company.scale || 'Nie określono'}</p>
+              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <p className="text-xs text-slate-400 mb-2 uppercase tracking-widest font-bold">Skala działalności</p>
+                <p className="text-slate-900 font-medium">{company.scale || 'Nie określono'}</p>
               </div>
             </div>
           </div>

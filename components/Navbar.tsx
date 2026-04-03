@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 ${isScrolled ? 'bg-industrial-950 border-b border-white/5 py-3' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 ${isScrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 shadow-sm' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <button 
           onClick={() => setView('home')}
@@ -36,9 +36,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             <Factory className="w-6 h-6 text-white" />
           </div>
           <div className="flex items-baseline">
-            <span className={isScrolled ? 'text-white' : 'text-black'}>Fab</span>
+            <span className={isScrolled ? 'text-slate-900' : 'text-slate-900'}>Fab</span>
             <span className="text-accent-blue">Link</span>
-            <span className="text-slate-400">.pl</span>
+            <span className="text-slate-500">.pl</span>
           </div>
         </button>
 
@@ -46,34 +46,34 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
         <div className="hidden md:flex items-center gap-8">
           <button 
             onClick={() => setView('home')}
-            className={`p-2 rounded-lg transition-all ${currentView === 'home' ? 'text-accent-blue bg-white/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}
+            className={`p-2 rounded-lg transition-all ${currentView === 'home' ? 'text-accent-blue bg-accent-blue/5' : isScrolled ? 'text-slate-600 hover:text-accent-blue hover:bg-slate-50' : 'text-slate-700 hover:text-accent-blue hover:bg-white/10'}`}
             title="Strona główna"
           >
             <Home className="w-5 h-5" />
           </button>
           <button 
             onClick={() => setView('search')}
-            className={`text-sm font-medium transition-colors ${currentView === 'search' ? 'text-accent-blue' : 'text-slate-400 hover:text-white'}`}
+            className={`text-sm font-bold transition-colors ${currentView === 'search' ? 'text-accent-blue' : isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
           >
             Katalog Firm
           </button>
           <button 
             onClick={() => setView('add-company')}
-            className={`flex items-center gap-2 px-5 py-2.5 bg-accent-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 ${currentView === 'add-company' ? 'ring-2 ring-white/20' : ''}`}
+            className={`flex items-center gap-2 px-5 py-2.5 bg-accent-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 ${currentView === 'add-company' ? 'ring-2 ring-accent-blue/20' : ''}`}
           >
             <PlusCircle className="w-4 h-4" />
             Dodaj firmę
           </button>
-          <div className="h-6 w-px bg-white/10 mx-2" />
+          <div className={`h-6 w-px mx-2 ${isScrolled ? 'bg-slate-200' : 'bg-slate-300/20'}`} />
           {user ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-white/20" />
-                <span className="text-sm text-white font-medium">{user.displayName}</span>
+                <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-full border border-slate-200" />
+                <span className={`text-sm font-bold ${isScrolled ? 'text-slate-900' : 'text-slate-900'}`}>{user.displayName}</span>
               </div>
               <button 
                 onClick={() => logout()}
-                className="text-xs text-slate-400 hover:text-white transition-colors"
+                className={`text-xs font-bold transition-colors ${isScrolled ? 'text-slate-400 hover:text-slate-600' : 'text-slate-500 hover:text-slate-700'}`}
               >
                 Wyloguj
               </button>
@@ -81,17 +81,17 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           ) : (
             <button 
               onClick={() => signInWithGoogle()}
-              className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors"
+              className={`flex items-center gap-2 transition-colors ${isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
             >
               <User className="w-5 h-5" />
-              <span className="text-sm font-medium">Zaloguj się</span>
+              <span className="text-sm font-bold">Zaloguj się</span>
             </button>
           )}
         </div>
 
         {/* Mobile Toggle */}
         <button 
-          className="md:hidden text-white"
+          className={`md:hidden ${isScrolled ? 'text-slate-900' : 'text-slate-900'}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X /> : <Menu />}
@@ -100,16 +100,16 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-industrial-900 border-b border-white/10 p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300">
-          <button onClick={() => { setView('home'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-white font-medium">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300 shadow-xl">
+          <button onClick={() => { setView('home'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-slate-900 font-bold">
             <Home className="w-5 h-5 text-accent-blue" />
             Strona główna
           </button>
-          <button onClick={() => { setView('search'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-white font-medium">
+          <button onClick={() => { setView('search'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-slate-900 font-bold">
             <Search className="w-5 h-5 text-accent-blue" />
             Katalog Firm
           </button>
-          <button onClick={() => { setView('add-company'); setMobileMenuOpen(false); }} className="bg-accent-blue text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2">
+          <button onClick={() => { setView('add-company'); setMobileMenuOpen(false); }} className="bg-accent-blue text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
             <PlusCircle className="w-5 h-5" />
             Dodaj firmę
           </button>

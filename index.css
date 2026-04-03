@@ -12,8 +12,8 @@
 }
 
 body {
-  background-color: var(--industrial-950);
-  color: #e2e8f0;
+  background-color: #f8fafc;
+  color: #1e293b;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
