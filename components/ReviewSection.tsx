@@ -127,7 +127,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ companyId }) => {
 
         {/* Add Review Form */}
         <div className="lg:col-span-1">
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl sticky top-24">
+          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl">
             <h4 className="text-xl font-bold text-slate-900 mb-6">Dodaj swoją opinię</h4>
             
             <form onSubmit={handleSubmit} className="space-y-6">

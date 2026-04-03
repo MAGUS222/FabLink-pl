@@ -65,31 +65,31 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent" />
           
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+            className="absolute top-6 right-6 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-all backdrop-blur-md border border-white/20 z-10"
           >
             <X className="w-6 h-6" />
           </button>
 
-          <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
-            <div>
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 flex justify-between items-end">
+            <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">
-                <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${company.type === 'Producent' ? 'bg-accent-blue text-white' : 'bg-slate-800 text-slate-100'}`}>
+                <span className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm ${company.type === 'Producent' ? 'bg-accent-blue text-white' : 'bg-slate-800 text-slate-100'}`}>
                   {company.type}
                 </span>
-                <span className="text-slate-700 flex items-center gap-2 text-sm font-medium">
+                <span className="text-slate-700 flex items-center gap-2 text-sm font-bold bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-white/50">
                   <CheckCircle2 className="w-4 h-4 text-green-600" />
                   Zweryfikowany profil
                 </span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-display text-slate-900">{company.name}</h2>
+              <h2 className="text-4xl md:text-6xl font-display text-slate-900 leading-tight">{company.name}</h2>
             </div>
             
             {isOwner && (
-              <button className="px-6 py-3 bg-white/80 hover:bg-white backdrop-blur-md text-slate-900 rounded-xl font-bold flex items-center gap-2 transition-all border border-slate-200 shadow-sm">
+              <button className="px-6 py-3 bg-white/90 hover:bg-white backdrop-blur-md text-slate-900 rounded-xl font-bold flex items-center gap-2 transition-all border border-slate-200 shadow-lg relative z-10">
                 <Briefcase className="w-5 h-5" />
                 Edytuj wpis
               </button>
@@ -191,15 +191,11 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
                   </div>
                 </div>
               </section>
-
-              <div className="pt-12 border-t border-slate-100">
-                <ReviewSection companyId={company.id} />
-              </div>
             </div>
 
             {/* Sidebar / Contact */}
             <div className="space-y-8">
-              <div className="bg-slate-50 border border-slate-200 p-8 rounded-2xl space-y-6 shadow-sm">
+              <div className="bg-slate-50 border border-slate-200 p-8 rounded-2xl space-y-6 shadow-sm sticky top-0">
                 <h3 className="text-lg text-slate-900 font-bold">Dane kontaktowe</h3>
                 
                 <div className="space-y-4">
@@ -268,6 +264,10 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
                 <p className="text-slate-900 font-medium">{company.scale || 'Nie określono'}</p>
               </div>
             </div>
+          </div>
+
+          <div className="mt-12 pt-12 border-t border-slate-100">
+            <ReviewSection companyId={company.id} />
           </div>
         </div>
       </motion.div>

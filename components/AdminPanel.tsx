@@ -15,25 +15,39 @@ const AdminPanel: React.FC = () => {
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{ type: string, id: string } | null>(null);
   const [editMode, setEditMode] = useState<'company' | 'ad' | 'post' | null>(null);
   const [editingItem, setEditingItem] = useState<any>(null);
 
   const deleteCompany = (id: string) => {
-    if (window.confirm('Czy na pewno chcesz usunąć tę firmę?')) {
-      setCompanies(companies.filter(c => c.id !== id));
-    }
+    setConfirmAction({ type: 'company', id });
+    setIsConfirmOpen(true);
   };
 
   const deleteAd = (id: string) => {
-    if (window.confirm('Czy na pewno chcesz usunąć tę reklamę?')) {
-      setAds(ads.filter(a => a.id !== id));
-    }
+    setConfirmAction({ type: 'ad', id });
+    setIsConfirmOpen(true);
   };
 
   const deletePost = (id: string) => {
-    if (window.confirm('Czy na pewno chcesz usunąć ten artykuł?')) {
-      setPosts(posts.filter(p => p.id !== id));
+    setConfirmAction({ type: 'post', id });
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirm = () => {
+    if (!confirmAction) return;
+    
+    if (confirmAction.type === 'company') {
+      setCompanies(companies.filter(c => c.id !== confirmAction.id));
+    } else if (confirmAction.type === 'ad') {
+      setAds(ads.filter(a => a.id !== confirmAction.id));
+    } else if (confirmAction.type === 'post') {
+      setPosts(posts.filter(p => p.id !== confirmAction.id));
     }
+    
+    setIsConfirmOpen(false);
+    setConfirmAction(null);
   };
 
   const toggleAdStatus = (id: string) => {
@@ -52,8 +66,16 @@ const AdminPanel: React.FC = () => {
     const data = Object.fromEntries(formData.entries());
 
     if (editMode === 'company') {
+      const companyData = {
+        ...data,
+        contact: {
+          email: data.email as string || editingItem?.contact?.email || '',
+          phone: data.phone as string || editingItem?.contact?.phone || '',
+          website: data.website as string || editingItem?.contact?.website || '',
+        }
+      };
       if (editingItem) {
-        setCompanies(companies.map(c => c.id === editingItem.id ? { ...c, ...data } : c));
+        setCompanies(companies.map(c => c.id === editingItem.id ? { ...c, ...companyData } : c));
       } else {
         const newCompany: Company = {
           id: Math.random().toString(36).substr(2, 9),
@@ -62,9 +84,13 @@ const AdminPanel: React.FC = () => {
           type: data.type as any,
           industry: data.industry as string,
           location: data.location as string,
-          postalCode: '00-000',
-          contact: { email: '', phone: '', website: '' },
-          images: ['https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800'],
+          postalCode: data.postalCode as string || '00-000',
+          contact: { 
+            email: data.email as string || '', 
+            phone: data.phone as string || '', 
+            website: data.website as string || '' 
+          },
+          images: [data.imageUrl as string || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800'],
           ownerUid: 'admin',
           createdAt: Date.now(),
         };
@@ -506,6 +532,28 @@ const AdminPanel: React.FC = () => {
                       <input name="location" defaultValue={editingItem?.location} required className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
                     </div>
                     <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">Kod pocztowy</label>
+                      <input name="postalCode" defaultValue={editingItem?.postalCode} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">E-mail kontaktowy</label>
+                        <input name="email" defaultValue={editingItem?.contact?.email} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Telefon</label>
+                        <input name="phone" defaultValue={editingItem?.contact?.phone} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">Strona WWW</label>
+                      <input name="website" defaultValue={editingItem?.contact?.website} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">URL obrazu głównego</label>
+                      <input name="imageUrl" defaultValue={editingItem?.images?.[0]} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all" />
+                    </div>
+                    <div>
                       <label className="block text-sm font-bold text-slate-700 mb-2">Opis</label>
                       <textarea name="description" defaultValue={editingItem?.description} rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-accent-blue focus:border-transparent outline-none transition-all resize-none" />
                     </div>
@@ -586,6 +634,42 @@ const AdminPanel: React.FC = () => {
                 </button>
               </div>
             </form>
+          </motion.div>
+        </div>
+      )}
+      {/* Confirmation Modal */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setIsConfirmOpen(false)}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center"
+          >
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Trash2 className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Czy na pewno?</h3>
+            <p className="text-slate-500 mb-8">Tej operacji nie można cofnąć. Wszystkie powiązane dane zostaną usunięte.</p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setIsConfirmOpen(false)}
+                className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all"
+              >
+                Anuluj
+              </button>
+              <button 
+                onClick={handleConfirm}
+                className="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+              >
+                Usuń
+              </button>
+            </div>
           </motion.div>
         </div>
       )}
