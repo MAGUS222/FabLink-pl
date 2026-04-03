@@ -35,17 +35,29 @@ const AddCompanyForm: React.FC = () => {
     }
 
     setIsFetchingGus(true);
-    // Simulate API call to GUS/BIR
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setFormData(prev => ({
-      ...prev,
-      name: 'Przykładowa Firma Sp. z o.o.',
-      location: 'Warszawa, Mazowieckie',
-      postalCode: '00-001',
-      description: 'Firma zautomatyzowana, zaciągnięta z bazy GUS. Specjalizujemy się w nowoczesnych rozwiązaniach przemysłowych.'
-    }));
-    setIsFetchingGus(false);
+    try {
+      const response = await fetch(`/api/gus/${nip}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Błąd serwera');
+      }
+
+      const data = await response.json();
+      
+      // Update form data with real results
+      setFormData(prev => ({
+        ...prev,
+        name: data.name || '',
+        location: data.location || '',
+        postalCode: data.postalCode || '',
+        description: `Firma ${data.name} z siedzibą w ${data.location}. Dane pobrane automatycznie z Wykazu Podatników VAT (Biała Lista MF).`
+      }));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      alert(error instanceof Error ? error.message : 'Wystąpił błąd podczas pobierania danych.');
+    } finally {
+      setIsFetchingGus(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
