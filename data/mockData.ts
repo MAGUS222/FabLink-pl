@@ -4,11 +4,19 @@ export const INDUSTRIES: Industry[] = [
   { id: '1', name: 'Obróbka Metalu', icon: 'Settings', slug: 'metal' },
   { id: '2', name: 'Tworzywa Sztuczne', icon: 'Layers', slug: 'plastics' },
   { id: '3', name: 'Elektronika', icon: 'Cpu', slug: 'electronics' },
-  { id: '4', name: 'Tekstylia', icon: 'Shirt', slug: 'textiles' },
-  { id: '5', name: 'Automatyka', icon: 'Zap', slug: 'automation' },
+  { id: '4', name: 'Odzieżowa i Tekstylia', icon: 'Shirt', slug: 'apparel' },
+  { id: '5', name: 'Automatyka i Robotyka', icon: 'Zap', slug: 'automation' },
   { id: '6', name: 'Logistyka', icon: 'Truck', slug: 'logistics' },
-  { id: '7', name: 'Chemia', icon: 'Beaker', slug: 'chemistry' },
-  { id: '8', name: 'Budownictwo', icon: 'Building2', slug: 'construction' },
+  { id: '7', name: 'Chemiczna', icon: 'Beaker', slug: 'chemistry' },
+  { id: '8', name: 'Budowlana', icon: 'Building2', slug: 'construction' },
+  { id: '9', name: 'Spożywcza', icon: 'Utensils', slug: 'food' },
+  { id: '10', name: 'Farmaceutyczna', icon: 'Pill', slug: 'pharma' },
+  { id: '11', name: 'Zbrojeniowa', icon: 'Shield', slug: 'defense' },
+  { id: '12', name: 'Motoryzacyjna', icon: 'Car', slug: 'automotive' },
+  { id: '13', name: 'Lotnicza', icon: 'Plane', slug: 'aerospace' },
+  { id: '14', name: 'Meblarska', icon: 'Armchair', slug: 'furniture' },
+  { id: '15', name: 'Energetyczna', icon: 'Zap', slug: 'energy' },
+  { id: '16', name: 'Opakowania', icon: 'Package', slug: 'packaging' },
 ];
 
 export const MOCK_COMPANIES: Company[] = [
