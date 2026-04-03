@@ -1,4 +1,31 @@
-import { Company, Industry } from '../types';
+import { Company, Industry, Ad } from '../types';
+
+export const MOCK_ADS: Ad[] = [
+  {
+    id: 'ad1',
+    companyName: 'MetalTech Solutions',
+    title: 'Precyzyjne cięcie laserem 24/7',
+    description: 'Najnowocześniejszy park maszynowy w Polsce. Krótkie terminy, wysoka jakość. Sprawdź naszą ofertę!',
+    imageUrl: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=800',
+    link: '#',
+    impressions: 1245,
+    clicks: 89,
+    active: true,
+    position: 2
+  },
+  {
+    id: 'ad2',
+    companyName: 'LogiTrans Sp. z o.o.',
+    title: 'Transport ciężki i ponadgabarytowy',
+    description: 'Obsługujemy całą Europę. Bezpieczeństwo i terminowość to nasz priorytet. Zapytaj o wycenę.',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800',
+    link: '#',
+    impressions: 856,
+    clicks: 42,
+    active: true,
+    position: 5
+  }
+];
 
 export const INDUSTRIES: Industry[] = [
   { id: '1', name: 'Obróbka Metalu', icon: 'Settings', slug: 'metal' },

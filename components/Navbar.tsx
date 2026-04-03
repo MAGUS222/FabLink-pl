@@ -1,5 +1,5 @@
 import React from 'react';
-import { Factory, Search, PlusCircle, Menu, X, User, Home } from 'lucide-react';
+import { Factory, Search, PlusCircle, Menu, X, User, Home, ShieldCheck, Calculator } from 'lucide-react';
 import { ViewState } from '../types';
 
 import { auth, signInWithGoogle, logout } from '../firebase';
@@ -24,6 +24,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
       unsubscribe();
     };
   }, []);
+
+  const isAdmin = user?.email === 'mgrochowski222@gmail.com';
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 ${isScrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-200 py-3 shadow-sm' : 'bg-transparent'}`}>
@@ -57,6 +59,20 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           >
             Katalog Firm
           </button>
+          <button 
+            onClick={() => setView('tools-salary')}
+            className={`text-sm font-bold transition-colors ${currentView === 'tools-salary' ? 'text-accent-blue' : isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
+          >
+            Kalkulator
+          </button>
+          {isAdmin && (
+            <button 
+              onClick={() => setView('admin')}
+              className={`text-sm font-bold transition-colors ${currentView === 'admin' ? 'text-accent-blue' : isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
+            >
+              Admin
+            </button>
+          )}
           <button 
             onClick={() => setView('add-company')}
             className={`flex items-center gap-2 px-5 py-2.5 bg-accent-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-500/20 ${currentView === 'add-company' ? 'ring-2 ring-accent-blue/20' : ''}`}
@@ -109,6 +125,16 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             <Search className="w-5 h-5 text-accent-blue" />
             Katalog Firm
           </button>
+          <button onClick={() => { setView('tools-salary'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-slate-900 font-bold">
+            <Calculator className="w-5 h-5 text-accent-blue" />
+            Kalkulator
+          </button>
+          {isAdmin && (
+            <button onClick={() => { setView('admin'); setMobileMenuOpen(false); }} className="flex items-center gap-3 py-2 text-slate-900 font-bold">
+              <ShieldCheck className="w-5 h-5 text-accent-blue" />
+              Panel Admina
+            </button>
+          )}
           <button onClick={() => { setView('add-company'); setMobileMenuOpen(false); }} className="bg-accent-blue text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20">
             <PlusCircle className="w-5 h-5" />
             Dodaj firmę

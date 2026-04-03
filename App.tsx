@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, PlusCircle, Factory, Briefcase, MapPin, SlidersHorizontal, ChevronRight, ArrowRight, X, Globe, Phone, Mail, CheckCircle2 } from 'lucide-react';
 import { Company, CompanyType, SearchFilters, ViewState } from './types';
-import { MOCK_COMPANIES, INDUSTRIES } from './data/mockData';
+import { MOCK_COMPANIES, INDUSTRIES, MOCK_ADS } from './data/mockData';
 
 // Components
 import Navbar from './components/Navbar';
@@ -14,6 +14,9 @@ import CompanyProfile from './components/CompanyProfile';
 import AddCompanyForm from './components/AddCompanyForm';
 import Footer from './components/Footer';
 import RFQForm from './components/RFQForm';
+import AdminPanel from './components/AdminPanel';
+import SalaryCalculator from './components/SalaryCalculator';
+import { Ad } from './types';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('home');
@@ -44,6 +47,17 @@ const App: React.FC = () => {
       return matchesQuery && matchesType && matchesIndustry && matchesLocation && matchesMaterial;
     });
   }, [filters]);
+
+  // Ad injection logic
+  const companiesWithAds = useMemo(() => {
+    const results: (Company | Ad)[] = [...filteredCompanies];
+    MOCK_ADS.filter(ad => ad.active).forEach(ad => {
+      if (ad.position !== undefined && ad.position <= results.length) {
+        results.splice(ad.position, 0, ad);
+      }
+    });
+    return results;
+  }, [filteredCompanies]);
 
   const handleHeroSearch = (query: string, type: CompanyType | 'Wszystkie') => {
     setFilters(prev => ({ ...prev, query, type }));
@@ -167,24 +181,55 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {filteredCompanies.length > 0 ? (
+                  {companiesWithAds.length > 0 ? (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {filteredCompanies.map(company => (
-                        <div key={company.id} className="relative group">
-                          <div className="absolute top-4 left-4 z-10">
-                            <input 
-                              type="checkbox" 
-                              checked={selectedForRFQ.includes(company.id)}
-                              onChange={() => toggleRFQSelection(company.id)}
-                              className="w-5 h-5 rounded border-slate-300 bg-white text-accent-blue focus:ring-accent-blue cursor-pointer shadow-sm"
+                      {companiesWithAds.map((item, idx) => {
+                        const isAd = 'companyName' in item;
+                        if (isAd) {
+                          const ad = item as Ad;
+                          return (
+                            <motion.div 
+                              key={ad.id}
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="bg-gradient-to-br from-blue-50 to-white border-2 border-accent-blue/20 rounded-3xl p-6 relative overflow-hidden shadow-lg"
+                            >
+                              <div className="absolute top-0 right-0 bg-accent-blue text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-bl-xl">Sponsorowane</div>
+                              <div className="flex gap-4">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-md">
+                                  <img src={ad.imageUrl} alt={ad.title} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="text-xs font-bold text-accent-blue mb-1 uppercase">{ad.companyName}</div>
+                                  <h4 className="text-lg font-bold text-slate-900 mb-2 leading-tight">{ad.title}</h4>
+                                  <p className="text-xs text-slate-500 font-medium mb-4 line-clamp-2">{ad.description}</p>
+                                  <a href={ad.link} className="text-xs font-bold text-accent-blue hover:underline flex items-center gap-1">
+                                    Sprawdź ofertę <ArrowRight className="w-3 h-3" />
+                                  </a>
+                                </div>
+                              </div>
+                            </motion.div>
+                          );
+                        }
+                        
+                        const company = item as Company;
+                        return (
+                          <div key={company.id} className="relative group">
+                            <div className="absolute top-4 left-4 z-10">
+                              <input 
+                                type="checkbox" 
+                                checked={selectedForRFQ.includes(company.id)}
+                                onChange={() => toggleRFQSelection(company.id)}
+                                className="w-5 h-5 rounded border-slate-300 bg-white text-accent-blue focus:ring-accent-blue cursor-pointer shadow-sm"
+                              />
+                            </div>
+                            <CompanyCard 
+                              company={company} 
+                              onClick={(c) => { setSelectedCompany(c); }} 
                             />
                           </div>
-                          <CompanyCard 
-                            company={company} 
-                            onClick={(c) => { setSelectedCompany(c); }} 
-                          />
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="py-20 text-center bg-white border border-slate-200 rounded-3xl shadow-sm">
@@ -212,6 +257,28 @@ const App: React.FC = () => {
               exit={{ opacity: 0, y: -20 }}
             >
               <AddCompanyForm />
+            </motion.div>
+          )}
+
+          {view === 'admin' && (
+            <motion.div
+              key="admin"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <AdminPanel />
+            </motion.div>
+          )}
+
+          {view === 'tools-salary' && (
+            <motion.div
+              key="tools-salary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <SalaryCalculator />
             </motion.div>
           )}
         </AnimatePresence>

@@ -45,7 +45,20 @@ export interface SearchFilters {
   material: string;
 }
 
-export type ViewState = 'home' | 'search' | 'profile' | 'add-company';
+export type ViewState = 'home' | 'search' | 'profile' | 'add-company' | 'admin' | 'tools-salary';
+
+export interface Ad {
+  id: string;
+  companyName: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  link: string;
+  impressions: number;
+  clicks: number;
+  active: boolean;
+  position?: number; // Ideal position in the grid
+}
 
 declare global {
   interface Window {
