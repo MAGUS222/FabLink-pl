@@ -4,6 +4,7 @@ import { X, MapPin, Phone, Mail, Globe, Factory, Briefcase, CheckCircle2, Image 
 import { Company } from '../types';
 import { auth } from '../firebase';
 import RFQForm from './RFQForm';
+import ReviewSection from './ReviewSection';
 
 interface CompanyProfileProps {
   company: Company;
@@ -190,6 +191,10 @@ const CompanyProfile: React.FC<CompanyProfileProps> = ({ company, onClose }) => 
                   </div>
                 </div>
               </section>
+
+              <div className="pt-12 border-t border-slate-100">
+                <ReviewSection companyId={company.id} />
+              </div>
             </div>
 
             {/* Sidebar / Contact */}

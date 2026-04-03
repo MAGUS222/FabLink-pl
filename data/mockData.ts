@@ -1,4 +1,4 @@
-import { Company, Industry, Ad } from '../types';
+import { Company, Industry, Ad, Review, BlogPost } from '../types';
 
 export const MOCK_ADS: Ad[] = [
   {
@@ -24,6 +24,75 @@ export const MOCK_ADS: Ad[] = [
     clicks: 42,
     active: true,
     position: 5
+  }
+];
+
+export const MOCK_REVIEWS: Review[] = [
+  {
+    id: 'r1',
+    companyId: 'c1',
+    userName: 'Jan Kowalski',
+    rating: 5,
+    comment: 'Świetna współpraca, terminowość i wysoka jakość wykonania. Polecam!',
+    createdAt: Date.now() - 5000000,
+    status: 'approved'
+  },
+  {
+    id: 'r2',
+    companyId: 'c1',
+    userName: 'Anna Nowak',
+    rating: 4,
+    comment: 'Dobra jakość, choć czas oczekiwania mógłby być nieco krótszy.',
+    createdAt: Date.now() - 2000000,
+    status: 'approved'
+  }
+];
+
+export const MOCK_BLOG_POSTS: BlogPost[] = [
+  {
+    id: 'b1',
+    title: 'Jak wybrać dostawcę CNC? 5 kluczowych kryteriów',
+    excerpt: 'Wybór odpowiedniego partnera do obróbki skrawaniem to decyzja, która rzutuje na jakość całego Twojego produktu.',
+    content: `
+      ## 1. Park maszynowy i technologie
+      Pierwszym krokiem jest sprawdzenie, czy dostawca dysponuje maszynami odpowiednimi do Twoich potrzeb. Czy są to nowoczesne centra 3-, 4- czy 5-osiowe?
+      
+      ## 2. Certyfikaty jakości
+      ISO 9001 to standard, ale w branżach takich jak lotnictwo czy medycyna wymagane są specyficzne certyfikaty (np. AS9100).
+      
+      ## 3. Doświadczenie w obróbce konkretnych materiałów
+      Inaczej obrabia się aluminium, a inaczej tytan czy stale hartowane. Zapytaj o portfolio projektów z Twojego materiału.
+      
+      ## 4. Terminowość i komunikacja
+      W przemyśle opóźnienie o jeden dzień może zatrzymać całą linię montażową. Sprawdź opinie innych klientów o rzetelności dostawcy.
+      
+      ## 5. Możliwości skalowania produkcji
+      Czy dostawca poradzi sobie zarówno z prototypem, jak i serią 10 000 sztuk?
+    `,
+    author: 'Ekspert FabLink',
+    date: '2026-03-15',
+    imageUrl: 'https://images.unsplash.com/photo-1565034946487-067915993741?auto=format&fit=crop&q=80&w=800',
+    category: 'Poradniki',
+    readTime: '5 min'
+  },
+  {
+    id: 'b2',
+    title: 'Trendy w branży spożywczej 2026: Automatyzacja i Eko-opakowania',
+    excerpt: 'Przemysł spożywczy przechodzi rewolucję. Sprawdź, na co stawiają liderzy rynku w tym roku.',
+    content: `
+      Branża spożywcza w 2026 roku skupia się na dwóch głównych filarach: maksymalnej wydajności dzięki robotyzacji oraz minimalizacji śladu węglowego.
+      
+      ### Robotyzacja linii pakujących
+      Roboty typu delta oraz coboty (roboty współpracujące) stają się standardem nawet w mniejszych zakładach przetwórczych. Pozwalają one na zachowanie najwyższych standardów higieny przy jednoczesnym zwiększeniu tempa pracy.
+      
+      ### Nowe materiały w opakowaniach
+      Konsumenci wymagają rezygnacji z plastiku. Na popularności zyskują biopolimery oraz opakowania inteligentne, które informują o świeżości produktu bez konieczności jego otwierania.
+    `,
+    author: 'Redakcja FabLink',
+    date: '2026-03-28',
+    imageUrl: 'https://images.unsplash.com/photo-1516594798947-e65505dbb29d?auto=format&fit=crop&q=80&w=800',
+    category: 'Trendy',
+    readTime: '4 min'
   }
 ];
 

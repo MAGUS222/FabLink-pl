@@ -28,6 +28,8 @@ export interface Company {
   ownerUid: string;
   createdAt: number;
   updatedAt?: number;
+  rating?: number;
+  reviewCount?: number;
 }
 
 export interface Industry {
@@ -45,7 +47,30 @@ export interface SearchFilters {
   material: string;
 }
 
-export type ViewState = 'home' | 'search' | 'profile' | 'add-company' | 'admin' | 'tools-salary';
+export type ViewState = 'home' | 'search' | 'profile' | 'add-company' | 'admin' | 'tools-salary' | 'blog' | 'blog-post';
+
+export interface Review {
+  id: string;
+  companyId: string;
+  userName: string;
+  userPhoto?: string;
+  rating: number;
+  comment: string;
+  createdAt: number;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  date: string;
+  imageUrl: string;
+  category: string;
+  readTime: string;
+}
 
 export interface Ad {
   id: string;

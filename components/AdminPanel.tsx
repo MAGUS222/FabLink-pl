@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Building2, Megaphone, BarChart3, Trash2, Edit, Plus, Check, X, Eye, MousePointer2 } from 'lucide-react';
-import { MOCK_COMPANIES, MOCK_ADS } from '../data/mockData';
-import { Company, Ad } from '../types';
+import { LayoutDashboard, Building2, Megaphone, BarChart3, Trash2, Edit, Plus, Check, X, Eye, MousePointer2, MessageSquare, BookOpen, Star } from 'lucide-react';
+import { MOCK_COMPANIES, MOCK_ADS, MOCK_REVIEWS, MOCK_BLOG_POSTS } from '../data/mockData';
+import { Company, Ad, Review, BlogPost } from '../types';
 
 const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'companies' | 'ads' | 'stats'>('companies');
+  const [activeTab, setActiveTab] = useState<'companies' | 'ads' | 'stats' | 'reviews' | 'blog'>('companies');
   const [companies, setCompanies] = useState<Company[]>(MOCK_COMPANIES);
   const [ads, setAds] = useState<Ad[]>(MOCK_ADS);
+  const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
+  const [posts, setPosts] = useState<BlogPost[]>(MOCK_BLOG_POSTS);
 
   const deleteCompany = (id: string) => {
     if (window.confirm('Czy na pewno chcesz usunąć tę firmę?')) {
@@ -45,6 +47,18 @@ const AdminPanel: React.FC = () => {
               className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'stats' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <BarChart3 className="w-5 h-5" /> Statystyki
+            </button>
+            <button 
+              onClick={() => setActiveTab('reviews')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'reviews' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <MessageSquare className="w-5 h-5" /> Opinie
+            </button>
+            <button 
+              onClick={() => setActiveTab('blog')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'blog' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <BookOpen className="w-5 h-5" /> Blog
             </button>
           </div>
         </div>
@@ -202,6 +216,67 @@ const AdminPanel: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+            <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="font-bold text-slate-900">Moderacja opinii ({reviews.length})</h3>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {reviews.map(review => (
+                <div key={review.id} className="p-6 flex gap-6 items-start hover:bg-slate-50 transition-colors">
+                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 shrink-0">
+                    <Star className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between mb-2">
+                      <div>
+                        <span className="font-bold text-slate-900">{review.userName}</span>
+                        <span className="text-slate-400 text-sm ml-3">dla {companies.find(c => c.id === review.companyId)?.name}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-slate-200'}`} />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-slate-600 text-sm mb-4 italic">"{review.comment}"</p>
+                    <div className="flex gap-3">
+                      <button className="px-4 py-1.5 bg-green-500 text-white text-xs font-bold rounded-lg hover:bg-green-600 transition-all">Zatwierdź</button>
+                      <button className="px-4 py-1.5 bg-red-50 text-red-500 text-xs font-bold rounded-lg hover:bg-red-100 transition-all">Odrzuć</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'blog' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            <div className="flex justify-end">
+              <button className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                <Plus className="w-5 h-5" /> Nowy artykuł
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {posts.map(post => (
+                <div key={post.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-lg flex gap-6 items-center">
+                  <img src={post.imageUrl} alt="" className="w-24 h-24 rounded-2xl object-cover shrink-0" />
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-accent-blue mb-1 uppercase">{post.category}</div>
+                    <h4 className="text-lg font-bold text-slate-900 mb-1">{post.title}</h4>
+                    <div className="text-sm text-slate-400 font-medium">{post.date} • {post.author}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-accent-blue transition-all"><Edit className="w-5 h-5" /></button>
+                    <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:text-red-500 transition-all"><Trash2 className="w-5 h-5" /></button>
+                  </div>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

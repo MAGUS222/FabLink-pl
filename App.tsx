@@ -16,11 +16,14 @@ import Footer from './components/Footer';
 import RFQForm from './components/RFQForm';
 import AdminPanel from './components/AdminPanel';
 import SalaryCalculator from './components/SalaryCalculator';
-import { Ad } from './types';
+import BlogList from './components/BlogList';
+import BlogPostView from './components/BlogPostView';
+import { Ad, BlogPost } from './types';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('home');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedForRFQ, setSelectedForRFQ] = useState<string[]>([]);
   const [showBulkRFQ, setShowBulkRFQ] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -279,6 +282,28 @@ const App: React.FC = () => {
               exit={{ opacity: 0 }}
             >
               <SalaryCalculator />
+            </motion.div>
+          )}
+
+          {view === 'blog' && (
+            <motion.div
+              key="blog"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <BlogList onSelectPost={(post) => { setSelectedPost(post); setView('blog-post'); }} />
+            </motion.div>
+          )}
+
+          {view === 'blog-post' && selectedPost && (
+            <motion.div
+              key="blog-post"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <BlogPostView post={selectedPost} onBack={() => setView('blog')} />
             </motion.div>
           )}
         </AnimatePresence>

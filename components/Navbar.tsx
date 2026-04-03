@@ -60,6 +60,12 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             Katalog Firm
           </button>
           <button 
+            onClick={() => setView('blog')}
+            className={`text-sm font-bold transition-colors ${currentView === 'blog' ? 'text-accent-blue' : isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
+          >
+            Baza Wiedzy
+          </button>
+          <button 
             onClick={() => setView('tools-salary')}
             className={`text-sm font-bold transition-colors ${currentView === 'tools-salary' ? 'text-accent-blue' : isScrolled ? 'text-slate-600 hover:text-accent-blue' : 'text-slate-700 hover:text-accent-blue'}`}
           >
