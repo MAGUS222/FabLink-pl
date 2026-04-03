@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, User, MessageSquare, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Review } from '../types';
-import { MOCK_REVIEWS } from '../data/mockData';
+import { MOCK_REVIEWS, MOCK_COMPANIES } from '../data/mockData';
+import { notificationService } from '../services/NotificationService';
 
 interface ReviewSectionProps {
   companyId: string;
@@ -19,7 +20,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ companyId }) => {
     setIsSubmitting(true);
     
     // Simulate API call
-    setTimeout(() => {
+    setTimeout(async () => {
       const review: Review = {
         id: Math.random().toString(36).substr(2, 9),
         companyId,
@@ -29,6 +30,18 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ companyId }) => {
         createdAt: Date.now(),
         status: 'pending'
       };
+      
+      // Send notification to company owner
+      const company = MOCK_COMPANIES.find(c => c.id === companyId);
+      if (company) {
+        await notificationService.sendNotification({
+          type: 'review',
+          title: `Nowa opinia dla ${company.name}`,
+          message: `Otrzymałeś nową opinię (${newReview.rating}/5) od użytkownika Gość: "${newReview.comment}"`,
+          recipientEmail: company.contact.email,
+          companyId: company.id
+        });
+      }
       
       setIsSubmitting(false);
       setShowSuccess(true);

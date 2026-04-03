@@ -72,6 +72,18 @@ export interface BlogPost {
   readTime: string;
 }
 
+export interface Notification {
+  id: string;
+  type: 'review' | 'rfq' | 'system';
+  title: string;
+  message: string;
+  recipientEmail: string;
+  companyId?: string;
+  createdAt: number;
+  read: boolean;
+  emailSent: boolean;
+}
+
 export interface Ad {
   id: string;
   companyName: string;

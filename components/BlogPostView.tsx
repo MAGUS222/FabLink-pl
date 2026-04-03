@@ -72,10 +72,20 @@ const BlogPostView: React.FC<BlogPostViewProps> = ({ post, onBack }) => {
             </button>
           </div>
 
-          <div className="prose prose-lg prose-slate max-w-none">
-            <div className="markdown-body">
-              <Markdown>{post.content}</Markdown>
-            </div>
+          <div className="blog-content text-slate-700 leading-relaxed text-lg space-y-6">
+            <Markdown 
+              components={{
+                h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-slate-900 mt-12 mb-6" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-2xl font-bold text-slate-900 mt-8 mb-4" {...props} />,
+                p: ({node, ...props}) => <p className="mb-6" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-3 mb-6 pl-4" {...props} />,
+                li: ({node, ...props}) => <li className="text-slate-700" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-bold text-slate-900" {...props} />,
+                blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-accent-blue pl-6 py-2 italic text-slate-600 bg-slate-50 rounded-r-xl my-8" {...props} />,
+              }}
+            >
+              {post.content}
+            </Markdown>
           </div>
 
           <div className="mt-20 pt-12 border-t border-slate-100">

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Factory, Search, PlusCircle, Menu, X, User, Home, ShieldCheck, Calculator } from 'lucide-react';
+import { Search, PlusCircle, Menu, X, User, Home, ShieldCheck, Calculator } from 'lucide-react';
 import { ViewState } from '../types';
+import Logo from './Logo';
 
 import { auth, signInWithGoogle, logout } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -32,16 +33,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <button 
           onClick={() => setView('home')}
-          className="flex items-center gap-2 text-2xl font-display font-bold group transition-colors"
+          className="group transition-all"
         >
-          <div className="w-10 h-10 bg-accent-blue rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg shadow-blue-500/20">
-            <Factory className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex items-baseline">
-            <span className={isScrolled ? 'text-slate-900' : 'text-slate-900'}>Fab</span>
-            <span className="text-accent-blue">Link</span>
-            <span className="text-slate-500">.pl</span>
-          </div>
+          <Logo isScrolled={isScrolled} />
         </button>
 
         {/* Desktop Menu */}
