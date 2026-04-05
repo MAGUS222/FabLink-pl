@@ -72,30 +72,28 @@ const BlogPostView: React.FC<BlogPostViewProps> = ({ post, onBack }) => {
             </button>
           </div>
 
-          <div className="blog-content prose prose-lg max-w-none text-slate-700 leading-relaxed text-lg space-y-6">
+          <div className="blog-content max-w-none text-slate-900 leading-relaxed text-lg">
             <Markdown 
               components={{
-                h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-slate-900 mt-12 mb-6 border-b border-slate-100 pb-4" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-2xl font-bold text-slate-900 mt-8 mb-4" {...props} />,
-                p: ({node, ...props}) => <p className="mb-6 leading-relaxed" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc list-outside space-y-3 mb-8 pl-6" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal list-outside space-y-3 mb-8 pl-6" {...props} />,
-                li: ({node, ...props}) => <li className="text-slate-700 pl-2" {...props} />,
-                strong: ({node, ...props}) => <strong className="font-bold text-slate-900" {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-black mt-12 mb-6" {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-2xl font-bold text-black mt-8 mb-4" {...props} />,
+                p: ({node, ...props}) => <p className="mb-6 leading-relaxed text-black" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc list-outside space-y-3 mb-8 pl-6 text-black" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal list-outside space-y-3 mb-8 pl-6 text-black" {...props} />,
+                li: ({node, ...props}) => <li className="pl-2" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-bold text-black" {...props} />,
                 blockquote: ({node, ...props}) => (
-                  <blockquote className="border-l-4 border-accent-blue pl-8 py-4 italic text-slate-600 bg-slate-50/50 rounded-r-2xl my-10 relative overflow-hidden" {...props}>
-                    <div className="absolute top-0 left-0 w-1 h-full bg-accent-blue opacity-50" />
-                  </blockquote>
+                  <blockquote className="border-l-4 border-slate-200 pl-6 py-2 italic text-slate-600 my-8" {...props} />
                 ),
                 img: ({node, ...props}) => (
-                  <div className="my-12 rounded-3xl overflow-hidden shadow-2xl border border-slate-100">
-                    <img className="w-full h-auto object-cover" referrerPolicy="no-referrer" {...props} />
-                    {props.alt && <p className="text-center text-sm text-slate-400 mt-4 font-medium italic">{props.alt}</p>}
+                  <div className="my-10">
+                    <img className="w-full h-auto rounded-xl shadow-sm" referrerPolicy="no-referrer" {...props} />
+                    {props.alt && <p className="text-center text-sm text-slate-500 mt-3 italic">{props.alt}</p>}
                   </div>
                 ),
-                a: ({node, ...props}) => <a className="text-accent-blue hover:underline font-bold transition-all" {...props} />,
-                code: ({node, ...props}) => <code className="bg-slate-100 text-slate-900 px-2 py-0.5 rounded font-mono text-sm" {...props} />,
-                pre: ({node, ...props}) => <pre className="bg-slate-900 text-slate-100 p-6 rounded-2xl overflow-x-auto my-8 font-mono text-sm shadow-xl" {...props} />,
+                a: ({node, ...props}) => <a className="text-accent-blue hover:underline font-medium" {...props} />,
+                code: ({node, ...props}) => <code className="font-mono text-sm bg-slate-50 px-1 rounded" {...props} />,
+                pre: ({node, ...props}) => <div className="my-6 whitespace-pre-wrap font-sans text-black">{props.children}</div>,
               }}
             >
               {post.content}

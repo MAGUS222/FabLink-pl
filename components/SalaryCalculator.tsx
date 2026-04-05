@@ -1,10 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Calculator, Wallet, Receipt, Percent, Info, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calculator, Wallet, Receipt, Percent, Info, ArrowRight, CheckCircle2, Mail, X, ShieldCheck } from 'lucide-react';
 
 const SalaryCalculator: React.FC = () => {
   const [gross, setGross] = useState<number>(5000);
   const [contractType, setContractType] = useState<'uop' | 'uz' | 'uod'>('uop');
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [consent, setConsent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const calculation = useMemo(() => {
     // Simplified Polish tax/ZUS logic for demo
@@ -30,6 +34,59 @@ const SalaryCalculator: React.FC = () => {
       return { net, zus: 0, health: 0, tax };
     }
   }, [gross, contractType]);
+
+  const triggerDownload = () => {
+    const reportContent = `
+RAPORT WYNAGRODZENIA - FABLINK.PL
+Data wygenerowania: ${new Date().toLocaleDateString('pl-PL')}
+--------------------------------------------------
+RODZAJ UMOWY: ${contractType === 'uop' ? 'Umowa o pracę' : contractType === 'uz' ? 'Umowa zlecenie' : 'Umowa o dzieło'}
+WYNAGRODZENIE BRUTTO: ${gross.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
+
+ZESTAWIENIE SKŁADEK I PODATKÓW:
+- Składki ZUS: ${calculation.zus.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
+- Ubezpieczenie zdrowotne: ${calculation.health.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
+- Zaliczka na podatek: ${calculation.tax.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
+
+WYNAGRODZENIE NETTO ("NA RĘKĘ"): ${calculation.net.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
+--------------------------------------------------
+Kalkulator uwzględnia progi podatkowe na rok 2026.
+Wyniki mają charakter poglądowy.
+Dziękujemy za skorzystanie z narzędzia FabLink.pl
+    `;
+
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Raport_FabLink_${contractType}_${gross}PLN.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
+  const handleDownloadClick = () => {
+    setShowLeadModal(true);
+  };
+
+  const handleSubmitLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !consent) return;
+
+    setIsSubmitting(true);
+    
+    // Simulate API call for newsletter signup
+    setTimeout(() => {
+      console.log('Lead captured:', { email, consent, timestamp: new Date() });
+      setIsSubmitting(false);
+      setShowLeadModal(false);
+      triggerDownload();
+      // Reset form
+      setEmail('');
+      setConsent(false);
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 pt-12 pb-20 px-6">
@@ -130,13 +187,102 @@ const SalaryCalculator: React.FC = () => {
             </div>
 
             <div className="mt-12 pt-8 border-t border-white/10">
-              <button className="w-full py-4 bg-accent-blue hover:bg-blue-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 group shadow-lg shadow-blue-500/20">
+              <button 
+                onClick={handleDownloadClick}
+                className="w-full py-4 bg-accent-blue hover:bg-blue-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 group shadow-lg shadow-blue-500/20"
+              >
                 Pobierz raport PDF <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Lead Capture Modal */}
+      <AnimatePresence>
+        {showLeadModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLeadModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <button 
+                onClick={() => setShowLeadModal(false)}
+                className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="p-8">
+                <div className="w-12 h-12 bg-accent-blue/10 text-accent-blue rounded-xl flex items-center justify-center mb-6">
+                  <Mail className="w-6 h-6" />
+                </div>
+                
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">Odbierz swój raport</h2>
+                <p className="text-slate-500 mb-8">
+                  Wpisz swój adres e-mail, aby otrzymać szczegółowe zestawienie kosztów i dołączyć do naszego newslettera B2B.
+                </p>
+
+                <form onSubmit={handleSubmitLead} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">Adres E-mail</label>
+                    <input 
+                      type="email" 
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="twoj@email.pl"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent-blue outline-none transition-all"
+                    />
+                  </div>
+
+                  <label className="flex gap-3 cursor-pointer group">
+                    <div className="relative flex items-center">
+                      <input 
+                        type="checkbox" 
+                        required
+                        checked={consent}
+                        onChange={(e) => setConsent(e.target.checked)}
+                        className="peer sr-only"
+                      />
+                      <div className="w-5 h-5 border-2 border-slate-200 rounded peer-checked:bg-accent-blue peer-checked:border-accent-blue transition-all" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white absolute left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-xs text-slate-500 leading-tight">
+                      Wyrażam zgodę na otrzymywanie informacji handlowych drogą elektroniczną od FabLink.pl oraz akceptuję politykę prywatności.
+                    </span>
+                  </label>
+
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting || !email || !consent}
+                    className="w-full py-4 bg-accent-blue hover:bg-blue-600 disabled:bg-slate-200 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+                  >
+                    {isSubmitting ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>Generuj i pobierz raport <ArrowRight className="w-5 h-5" /></>
+                    )}
+                  </button>
+
+                  <div className="flex items-center justify-center gap-2 text-[10px] text-slate-400 uppercase font-bold tracking-widest">
+                    <ShieldCheck className="w-3 h-3" /> Twoje dane są bezpieczne
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
