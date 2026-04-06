@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Building2, Megaphone, BarChart3, Trash2, Edit, Plus, Check, X, Eye, MousePointer2, MessageSquare, BookOpen, Star, Mail, Bell } from 'lucide-react';
+import { LayoutDashboard, Building2, Megaphone, BarChart3, Trash2, Edit, Plus, Check, X, Eye, MousePointer2, MessageSquare, BookOpen, Star, Mail, Bell, Database } from 'lucide-react';
 import { MOCK_COMPANIES, MOCK_ADS, MOCK_REVIEWS, MOCK_BLOG_POSTS } from '../data/mockData';
 import { Company, Ad, Review, BlogPost, Notification } from '../types';
 import { notificationService } from '../services/NotificationService';
+import DataAcquisitionHub from './DataAcquisitionHub';
 
 const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'companies' | 'ads' | 'stats' | 'reviews' | 'blog' | 'notifications'>('companies');
+  const [activeTab, setActiveTab] = useState<'companies' | 'ads' | 'stats' | 'reviews' | 'blog' | 'notifications' | 'data-acquisition'>('companies');
   const [companies, setCompanies] = useState<Company[]>(MOCK_COMPANIES);
   const [ads, setAds] = useState<Ad[]>(MOCK_ADS);
   const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
@@ -144,7 +145,7 @@ const AdminPanel: React.FC = () => {
             <h1 className="text-4xl font-bold text-slate-900 mb-2">Panel Administratora</h1>
             <p className="text-slate-500 font-medium">Zarządzaj katalogiem firm i kampaniami reklamowymi.</p>
           </div>
-          <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex flex-wrap bg-white p-1 rounded-2xl border border-slate-200 shadow-sm gap-1">
             <button 
               onClick={() => setActiveTab('companies')}
               className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'companies' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -156,6 +157,12 @@ const AdminPanel: React.FC = () => {
               className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'ads' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <Megaphone className="w-5 h-5" /> Reklamy
+            </button>
+            <button 
+              onClick={() => setActiveTab('data-acquisition')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'data-acquisition' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <Database className="w-5 h-5" /> Pozyskiwanie Danych
             </button>
             <button 
               onClick={() => setActiveTab('stats')}
@@ -300,6 +307,12 @@ const AdminPanel: React.FC = () => {
               </div>
               <span className="font-bold">Dodaj nową kampanię</span>
             </button>
+          </motion.div>
+        )}
+
+        {activeTab === 'data-acquisition' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <DataAcquisitionHub onApprove={(newCompany) => setCompanies([newCompany, ...companies])} />
           </motion.div>
         )}
 
