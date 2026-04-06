@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calculator, Wallet, Receipt, Percent, Info, ArrowRight, CheckCircle2, Mail, X, ShieldCheck } from 'lucide-react';
 
+import { jsPDF } from 'jspdf';
+
 const SalaryCalculator: React.FC = () => {
   const [gross, setGross] = useState<number>(5000);
   const [contractType, setContractType] = useState<'uop' | 'uz' | 'uod'>('uop');
@@ -36,34 +38,47 @@ const SalaryCalculator: React.FC = () => {
   }, [gross, contractType]);
 
   const triggerDownload = () => {
-    const reportContent = `
-RAPORT WYNAGRODZENIA - FABLINK.PL
-Data wygenerowania: ${new Date().toLocaleDateString('pl-PL')}
---------------------------------------------------
-RODZAJ UMOWY: ${contractType === 'uop' ? 'Umowa o pracę' : contractType === 'uz' ? 'Umowa zlecenie' : 'Umowa o dzieło'}
-WYNAGRODZENIE BRUTTO: ${gross.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
-
-ZESTAWIENIE SKŁADEK I PODATKÓW:
-- Składki ZUS: ${calculation.zus.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
-- Ubezpieczenie zdrowotne: ${calculation.health.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
-- Zaliczka na podatek: ${calculation.tax.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
-
-WYNAGRODZENIE NETTO ("NA RĘKĘ"): ${calculation.net.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN
---------------------------------------------------
-Kalkulator uwzględnia progi podatkowe na rok 2026.
-Wyniki mają charakter poglądowy.
-Dziękujemy za skorzystanie z narzędzia FabLink.pl
-    `;
-
-    const blob = new Blob([reportContent], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Raport_FabLink_${contractType}_${gross}PLN.txt`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    const doc = new jsPDF();
+    
+    // Add content to PDF
+    doc.setFontSize(22);
+    doc.setTextColor(15, 23, 42); // slate-900
+    doc.text('RAPORT WYNAGRODZENIA - FABLINK.PL', 20, 30);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100, 116, 139); // slate-500
+    doc.text(`Data wygenerowania: ${new Date().toLocaleDateString('pl-PL')}`, 20, 40);
+    
+    doc.setDrawColor(226, 232, 240); // slate-200
+    doc.line(20, 45, 190, 45);
+    
+    doc.setFontSize(14);
+    doc.setTextColor(15, 23, 42);
+    doc.text('SZCZEGÓŁY KALKULACJI:', 20, 60);
+    
+    doc.setFontSize(12);
+    doc.text(`Rodzaj umowy: ${contractType === 'uop' ? 'Umowa o pracę' : contractType === 'uz' ? 'Umowa zlecenie' : 'Umowa o dzieło'}`, 20, 75);
+    doc.text(`Wynagrodzenie brutto: ${gross.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN`, 20, 85);
+    
+    doc.setDrawColor(241, 245, 249); // slate-100
+    doc.setFillColor(248, 250, 252); // slate-50
+    doc.rect(20, 95, 170, 60, 'F');
+    
+    doc.text('Zestawienie składek i podatków:', 25, 105);
+    doc.text(`- Składki ZUS: ${calculation.zus.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN`, 30, 115);
+    doc.text(`- Ubezpieczenie zdrowotne: ${calculation.health.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN`, 30, 125);
+    doc.text(`- Zaliczka na podatek: ${calculation.tax.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN`, 30, 135);
+    
+    doc.setFontSize(16);
+    doc.setTextColor(37, 99, 235); // blue-600
+    doc.text(`WYNAGRODZENIE NETTO: ${calculation.net.toLocaleString('pl-PL', { minimumFractionDigits: 2 })} PLN`, 20, 170);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(148, 163, 184); // slate-400
+    doc.text('Kalkulator uwzględnia progi podatkowe na rok 2026. Wyniki mają charakter poglądowy.', 20, 280);
+    doc.text('Dziękujemy za skorzystanie z narzędzia FabLink.pl', 20, 285);
+    
+    doc.save(`Raport_FabLink_${contractType}_${gross}PLN.pdf`);
   };
 
   const handleDownloadClick = () => {
