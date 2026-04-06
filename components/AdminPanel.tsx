@@ -153,16 +153,16 @@ const AdminPanel: React.FC = () => {
               <Building2 className="w-5 h-5" /> Firmy
             </button>
             <button 
-              onClick={() => setActiveTab('ads')}
-              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'ads' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
-            >
-              <Megaphone className="w-5 h-5" /> Reklamy
-            </button>
-            <button 
               onClick={() => setActiveTab('data-acquisition')}
               className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'data-acquisition' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <Database className="w-5 h-5" /> Pozyskiwanie Danych
+            </button>
+            <button 
+              onClick={() => setActiveTab('ads')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'ads' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <Megaphone className="w-5 h-5" /> Reklamy
             </button>
             <button 
               onClick={() => setActiveTab('stats')}
@@ -177,16 +177,16 @@ const AdminPanel: React.FC = () => {
               <MessageSquare className="w-5 h-5" /> Opinie
             </button>
             <button 
-              onClick={() => setActiveTab('blog')}
-              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'blog' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
-            >
-              <BookOpen className="w-5 h-5" /> Blog
-            </button>
-            <button 
               onClick={() => setActiveTab('notifications')}
               className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'notifications' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
             >
               <Bell className="w-5 h-5" /> Powiadomienia
+            </button>
+            <button 
+              onClick={() => setActiveTab('blog')}
+              className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'blog' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <BookOpen className="w-5 h-5" /> Blog
             </button>
           </div>
         </div>

@@ -32,21 +32,44 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
   const startRealScraping = async () => {
     setIsScraping(true);
     setLeads([]);
-    setScrapingProgress(10);
-    setScrapingStatus('Inicjowanie silnika AI...');
+    setScrapingProgress(5);
+    setScrapingStatus('Sprawdzanie konfiguracji...');
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const model = "gemini-3-flash-preview";
+      // Use the provided API key from process.env
+      const apiKey = process.env.GEMINI_API_KEY;
       
-      setScrapingProgress(30);
+      if (!apiKey) {
+        setScrapingStatus('Błąd: Brak klucza API Gemini. Upewnij się, że jest on skonfigurowany w systemie.');
+        setIsScraping(false);
+        return;
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      // Using gemini-3.1-pro-preview for more complex tasks like real-time scraping
+      const model = "gemini-3.1-pro-preview";
+      
+      setScrapingProgress(20);
       setScrapingStatus(`Przeszukiwanie sieci dla: ${searchQuery.industry} w ${searchQuery.location}...`);
+
+      const prompt = `Działaj jako profesjonalny scraper danych biznesowych. 
+      Znajdź 5 realnie istniejących firm z branży "${searchQuery.industry}" w lokalizacji "${searchQuery.location}". 
+      Dla każdej firmy musisz wyodrębnić następujące dane:
+      - Pełna nazwa firmy
+      - Branża (dokładna)
+      - Adres (ulica, numer, kod pocztowy, miasto)
+      - Strona internetowa (pełny URL)
+      - Adres e-mail (jeśli dostępny)
+      - Numer telefonu (format polski)
+      - Opis działalności (2-3 zdania, profesjonalny język)
+      - Numer NIP (10 cyfr, bardzo ważne!)
+      - Twoja pewność co do poprawności danych (0-100)
+
+      Zwróć dane WYŁĄCZNIE jako tablicę obiektów JSON. Nie dodawaj żadnych komentarzy ani tekstu poza JSONem.`;
 
       const response = await ai.models.generateContent({
         model,
-        contents: `Znajdź 5 realnych firm z branży "${searchQuery.industry}" w lokalizacji "${searchQuery.location}". 
-        Dla każdej firmy podaj: nazwę, dokładny adres, stronę www, email (jeśli dostępny), telefon, krótki opis działalności oraz NIP (jeśli uda się znaleźć).
-        Zwróć dane w formacie JSON.`,
+        contents: prompt,
         config: {
           tools: [{ googleSearch: {} }],
           responseMimeType: "application/json",
@@ -71,32 +94,45 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
         }
       });
 
-      setScrapingProgress(80);
-      setScrapingStatus('Przetwarzanie wyników...');
+      setScrapingProgress(70);
+      setScrapingStatus('Analizowanie pozyskanych danych...');
 
-      const rawData = JSON.parse(response.text || "[]");
+      const text = response.text;
+      if (!text) {
+        throw new Error("Model nie zwrócił żadnych danych. Spróbuj zmienić zapytanie.");
+      }
+
+      const rawData = JSON.parse(text);
+      if (!Array.isArray(rawData)) {
+        throw new Error("Nieprawidłowy format danych z AI.");
+      }
+
       const foundLeads: ScrapedLead[] = rawData.map((item: any, index: number) => ({
         id: `lead-${Date.now()}-${index}`,
-        name: item.name,
+        name: item.name || 'Firma bez nazwy',
         industry: item.industry || searchQuery.industry,
-        location: item.location,
+        location: item.location || 'Adres nieznany',
         website: item.website || '',
         email: item.email || '',
         phone: item.phone || '',
-        description: item.description,
+        description: item.description || 'Brak opisu działalności.',
         nip: item.nip?.replace(/[^0-9]/g, ''),
-        confidence: item.confidence || 85,
+        confidence: item.confidence || 80,
         whiteListStatus: 'unverified'
       }));
 
-      setLeads(foundLeads);
-      setScrapingProgress(100);
-      setScrapingStatus('Zakończono pomyślnie!');
-    } catch (error) {
+      if (foundLeads.length === 0) {
+        setScrapingStatus('Nie znaleziono firm spełniających kryteria. Spróbuj innej branży lub lokalizacji.');
+      } else {
+        setLeads(foundLeads);
+        setScrapingProgress(100);
+        setScrapingStatus('Scraping zakończony sukcesem!');
+      }
+    } catch (error: any) {
       console.error("Scraping error:", error);
-      setScrapingStatus('Błąd podczas scrapowania. Spróbuj ponownie.');
+      setScrapingStatus(`Błąd: ${error.message || 'Wystąpił problem z połączeniem'}. Spróbuj ponownie za chwilę.`);
     } finally {
-      setTimeout(() => setIsScraping(false), 1000);
+      setTimeout(() => setIsScraping(false), 2500);
     }
   };
 
