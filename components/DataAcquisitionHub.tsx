@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Database, Loader2, Check, X, Globe, Phone, Mail, MapPin, ExternalLink, Sparkles, Filter } from 'lucide-react';
+import { Search, Database, Loader2, Check, X, Globe, Phone, Mail, MapPin, ExternalLink, Sparkles, Filter, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Company } from '../types';
+import { GoogleGenAI, Type } from "@google/genai";
 
 interface ScrapedLead {
   id: string;
@@ -12,7 +13,9 @@ interface ScrapedLead {
   email: string;
   phone: string;
   description: string;
-  confidence: number; // AI confidence score
+  nip?: string;
+  confidence: number;
+  whiteListStatus?: 'verified' | 'unverified' | 'checking' | 'error';
 }
 
 interface DataAcquisitionHubProps {
@@ -21,70 +24,102 @@ interface DataAcquisitionHubProps {
 
 const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) => {
   const [isScraping, setIsScraping] = useState(false);
-  const [searchQuery, setSearchQuery] = useState({ industry: 'Obróbka Metalu', location: 'Warszawa' });
+  const [searchQuery, setSearchQuery] = useState({ industry: 'Drukarnie', location: 'Siedlce' });
   const [leads, setLeads] = useState<ScrapedLead[]>([]);
   const [scrapingProgress, setScrapingProgress] = useState(0);
   const [scrapingStatus, setScrapingStatus] = useState('');
 
-  const simulateScraping = () => {
+  const startRealScraping = async () => {
     setIsScraping(true);
     setLeads([]);
-    setScrapingProgress(0);
-    setScrapingStatus('Inicjowanie połączenia z Google Maps API...');
+    setScrapingProgress(10);
+    setScrapingStatus('Inicjowanie silnika AI...');
 
-    const steps = [
-      { progress: 20, status: 'Przeszukiwanie lokalnych spisów firm...' },
-      { progress: 45, status: 'Ekstrakcja danych kontaktowych ze stron WWW...' },
-      { progress: 70, status: 'Analiza AI: kategoryzacja i generowanie opisów...' },
-      { progress: 90, status: 'Weryfikacja poprawności danych...' },
-      { progress: 100, status: 'Zakończono!' },
-    ];
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const model = "gemini-3-flash-preview";
+      
+      setScrapingProgress(30);
+      setScrapingStatus(`Przeszukiwanie sieci dla: ${searchQuery.industry} w ${searchQuery.location}...`);
 
-    steps.forEach((step, index) => {
-      setTimeout(() => {
-        setScrapingProgress(step.progress);
-        setScrapingStatus(step.status);
-        if (index === steps.length - 1) {
-          const foundLeads: ScrapedLead[] = [
-            {
-              id: 'lead-1',
-              name: 'MetalTech Solutions Sp. z o.o.',
-              industry: 'Obróbka Metalu',
-              location: 'Warszawa, ul. Przemysłowa 12',
-              website: 'https://metaltech-solutions.pl',
-              email: 'biuro@metaltech-solutions.pl',
-              phone: '+48 22 123 45 67',
-              description: 'Specjaliści w precyzyjnej obróbce CNC i cięciu laserowym. Nowoczesny park maszynowy.',
-              confidence: 98
-            },
-            {
-              id: 'lead-2',
-              name: 'Precyzja-Wawa',
-              industry: 'Obróbka Metalu',
-              location: 'Warszawa, ul. Fabryczna 5',
-              website: 'http://precyzja-wawa.com',
-              email: 'kontakt@precyzja-wawa.com',
-              phone: '+48 601 202 303',
-              description: 'Rodzinna firma z 20-letnim doświadczeniem w ślusarstwie i spawaniu konstrukcji stalowych.',
-              confidence: 85
-            },
-            {
-              id: 'lead-3',
-              name: 'Stal-Konstrukt',
-              industry: 'Obróbka Metalu',
-              location: 'Warszawa, ul. Hutnicza 8',
-              website: 'https://stalkonstrukt.pl',
-              email: 'info@stalkonstrukt.pl',
-              phone: '+48 22 987 65 43',
-              description: 'Producent konstrukcji stalowych dla przemysłu i budownictwa. Certyfikaty ISO.',
-              confidence: 92
+      const response = await ai.models.generateContent({
+        model,
+        contents: `Znajdź 5 realnych firm z branży "${searchQuery.industry}" w lokalizacji "${searchQuery.location}". 
+        Dla każdej firmy podaj: nazwę, dokładny adres, stronę www, email (jeśli dostępny), telefon, krótki opis działalności oraz NIP (jeśli uda się znaleźć).
+        Zwróć dane w formacie JSON.`,
+        config: {
+          tools: [{ googleSearch: {} }],
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                name: { type: Type.STRING },
+                industry: { type: Type.STRING },
+                location: { type: Type.STRING },
+                website: { type: Type.STRING },
+                email: { type: Type.STRING },
+                phone: { type: Type.STRING },
+                description: { type: Type.STRING },
+                nip: { type: Type.STRING },
+                confidence: { type: Type.NUMBER }
+              },
+              required: ["name", "industry", "location", "description"]
             }
-          ];
-          setLeads(foundLeads);
-          setIsScraping(false);
+          }
         }
-      }, (index + 1) * 1200);
-    });
+      });
+
+      setScrapingProgress(80);
+      setScrapingStatus('Przetwarzanie wyników...');
+
+      const rawData = JSON.parse(response.text || "[]");
+      const foundLeads: ScrapedLead[] = rawData.map((item: any, index: number) => ({
+        id: `lead-${Date.now()}-${index}`,
+        name: item.name,
+        industry: item.industry || searchQuery.industry,
+        location: item.location,
+        website: item.website || '',
+        email: item.email || '',
+        phone: item.phone || '',
+        description: item.description,
+        nip: item.nip?.replace(/[^0-9]/g, ''),
+        confidence: item.confidence || 85,
+        whiteListStatus: 'unverified'
+      }));
+
+      setLeads(foundLeads);
+      setScrapingProgress(100);
+      setScrapingStatus('Zakończono pomyślnie!');
+    } catch (error) {
+      console.error("Scraping error:", error);
+      setScrapingStatus('Błąd podczas scrapowania. Spróbuj ponownie.');
+    } finally {
+      setTimeout(() => setIsScraping(false), 1000);
+    }
+  };
+
+  const checkWhiteList = async (leadId: string, nip?: string) => {
+    if (!nip) return;
+
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, whiteListStatus: 'checking' } : l));
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      // Official API: https://wl-api.mf.gov.pl/api/search/nip/{nip}?date={date}
+      const response = await fetch(`https://wl-api.mf.gov.pl/api/search/nip/${nip}?date=${today}`);
+      const data = await response.json();
+
+      if (data.result && data.result.subject) {
+        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, whiteListStatus: 'verified' } : l));
+      } else {
+        setLeads(prev => prev.map(l => l.id === leadId ? { ...l, whiteListStatus: 'error' } : l));
+      }
+    } catch (error) {
+      console.error("WhiteList check error:", error);
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, whiteListStatus: 'error' } : l));
+    }
   };
 
   const handleApprove = (lead: ScrapedLead) => {
@@ -96,6 +131,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
       industry: lead.industry,
       location: lead.location,
       postalCode: '00-000',
+      nip: lead.nip,
       contact: {
         email: lead.email,
         phone: lead.phone,
@@ -124,7 +160,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
         <div className="relative z-10">
           <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
             <Sparkles className="w-6 h-6 text-accent-blue" />
-            Inteligentny Scraper Firm
+            Inteligentny Scraper Firm (Real-Time)
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -137,7 +173,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
                   value={searchQuery.industry}
                   onChange={(e) => setSearchQuery({...searchQuery, industry: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-accent-blue outline-none transition-all"
-                  placeholder="np. Obróbka Metalu"
+                  placeholder="np. Drukarnie"
                 />
               </div>
             </div>
@@ -150,20 +186,20 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
                   value={searchQuery.location}
                   onChange={(e) => setSearchQuery({...searchQuery, location: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-accent-blue outline-none transition-all"
-                  placeholder="np. Warszawa"
+                  placeholder="np. Siedlce"
                 />
               </div>
             </div>
             <div className="flex items-end">
               <button 
-                onClick={simulateScraping}
+                onClick={startRealScraping}
                 disabled={isScraping}
                 className="w-full py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200 disabled:bg-slate-400"
               >
                 {isScraping ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Przeszukiwanie...
+                    Scrapowanie...
                   </>
                 ) : (
                   <>
@@ -203,7 +239,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
             className="space-y-6"
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold text-slate-900">Znalezione potencjalne firmy ({leads.length})</h3>
+              <h3 className="text-xl font-bold text-slate-900">Znalezione firmy ({leads.length})</h3>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Wymaga weryfikacji</span>
             </div>
 
@@ -250,7 +286,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
                         "{lead.description}"
                       </p>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
                           <MapPin className="w-4 h-4 text-accent-blue" />
                           {lead.location}
@@ -272,6 +308,44 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
                           <Globe className="w-4 h-4" />
                           Odwiedź stronę <ExternalLink className="w-3 h-3" />
                         </a>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div className="flex items-center gap-4">
+                          <div className="text-sm font-bold text-slate-700">
+                            NIP: {lead.nip || 'Nie znaleziono'}
+                          </div>
+                          {lead.nip && (
+                            <button 
+                              onClick={() => checkWhiteList(lead.id, lead.nip)}
+                              disabled={lead.whiteListStatus === 'checking' || lead.whiteListStatus === 'verified'}
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                lead.whiteListStatus === 'verified' 
+                                  ? 'bg-green-50 text-green-600' 
+                                  : lead.whiteListStatus === 'error'
+                                  ? 'bg-red-50 text-red-500'
+                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              }`}
+                            >
+                              {lead.whiteListStatus === 'checking' ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : lead.whiteListStatus === 'verified' ? (
+                                <ShieldCheck className="w-3 h-3" />
+                              ) : lead.whiteListStatus === 'error' ? (
+                                <AlertCircle className="w-3 h-3" />
+                              ) : (
+                                <Database className="w-3 h-3" />
+                              )}
+                              {lead.whiteListStatus === 'verified' 
+                                ? 'W Białej Księdze' 
+                                : lead.whiteListStatus === 'checking'
+                                ? 'Sprawdzanie...'
+                                : lead.whiteListStatus === 'error'
+                                ? 'Błąd / Brak w BK'
+                                : 'Sprawdź Białą Księgę'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

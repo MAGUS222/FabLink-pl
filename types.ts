@@ -24,6 +24,7 @@ export interface Company {
   materials?: string[];
   technologies?: string[];
   images: string[];
+  nip?: string;
   featured?: boolean;
   ownerUid: string;
   createdAt: number;
