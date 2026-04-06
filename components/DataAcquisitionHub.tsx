@@ -46,8 +46,8 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
       }
 
       const ai = new GoogleGenAI({ apiKey });
-      // Using gemini-3.1-pro-preview for more complex tasks like real-time scraping
-      const model = "gemini-3.1-pro-preview";
+      // Switching to gemini-3-flash-preview which has higher quota limits
+      const model = "gemini-3-flash-preview";
       
       setScrapingProgress(20);
       setScrapingStatus(`Przeszukiwanie sieci dla: ${searchQuery.industry} w ${searchQuery.location}...`);
@@ -130,7 +130,15 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
       }
     } catch (error: any) {
       console.error("Scraping error:", error);
-      setScrapingStatus(`Błąd: ${error.message || 'Wystąpił problem z połączeniem'}. Spróbuj ponownie za chwilę.`);
+      let userFriendlyMessage = "Wystąpił problem z połączeniem. Spróbuj ponownie za chwilę.";
+      
+      if (error.message?.includes("429") || error.message?.includes("quota")) {
+        userFriendlyMessage = "Przekroczono limit zapytań do AI (Quota Exceeded). Spróbuj ponownie za minutę lub użyj innego klucza API.";
+      } else if (error.message?.includes("API key")) {
+        userFriendlyMessage = "Błąd klucza API. Sprawdź konfigurację w ustawieniach.";
+      }
+      
+      setScrapingStatus(`Błąd: ${userFriendlyMessage}`);
     } finally {
       setTimeout(() => setIsScraping(false), 2500);
     }
@@ -349,18 +357,21 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
                       <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                         <div className="flex items-center gap-4">
                           <div className="text-sm font-bold text-slate-700">
-                            NIP: {lead.nip || 'Nie znaleziono'}
+                            <span className="text-[10px] text-slate-400 uppercase tracking-widest">NIP:</span>
+                            <span className="font-mono">{lead.nip || 'Nie znaleziono'}</span>
                           </div>
                           {lead.nip && (
                             <button 
                               onClick={() => checkWhiteList(lead.id, lead.nip)}
-                              disabled={lead.whiteListStatus === 'checking' || lead.whiteListStatus === 'verified'}
-                              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                              disabled={lead.whiteListStatus === 'checking'}
+                              className={`flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm ${
                                 lead.whiteListStatus === 'verified' 
-                                  ? 'bg-green-50 text-green-600' 
+                                  ? 'bg-green-500 text-white' 
                                   : lead.whiteListStatus === 'error'
-                                  ? 'bg-red-50 text-red-500'
-                                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                  ? 'bg-red-500 text-white'
+                                  : lead.whiteListStatus === 'checking'
+                                  ? 'bg-slate-200 text-slate-500 animate-pulse'
+                                  : 'bg-slate-900 text-white hover:bg-slate-800'
                               }`}
                             >
                               {lead.whiteListStatus === 'checking' ? (
