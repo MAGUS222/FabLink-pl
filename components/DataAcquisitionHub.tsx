@@ -46,8 +46,7 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
       }
 
       const ai = new GoogleGenAI({ apiKey });
-      // Switching to gemini-3-flash-preview which has higher quota limits
-      const model = "gemini-flash-latest";
+      const model = "gemini-1.5-flash";
       
       setScrapingProgress(20);
       setScrapingStatus(`Przeszukiwanie sieci dla: ${searchQuery.industry} w ${searchQuery.location}...`);
@@ -67,32 +66,67 @@ const DataAcquisitionHub: React.FC<DataAcquisitionHubProps> = ({ onApprove }) =>
 
       Zwróć dane WYŁĄCZNIE jako tablicę obiektów JSON. Nie dodawaj żadnych komentarzy ani tekstu poza JSONem.`;
 
-      const response = await ai.models.generateContent({
-        model,
-        contents: prompt,
-        config: {
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                industry: { type: Type.STRING },
-                location: { type: Type.STRING },
-                website: { type: Type.STRING },
-                email: { type: Type.STRING },
-                phone: { type: Type.STRING },
-                description: { type: Type.STRING },
-                nip: { type: Type.STRING },
-                confidence: { type: Type.NUMBER }
-              },
-              required: ["name", "industry", "location", "description"]
+      let response;
+      try {
+        response = await ai.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            tools: [{ googleSearch: {} }],
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  name: { type: Type.STRING },
+                  industry: { type: Type.STRING },
+                  location: { type: Type.STRING },
+                  website: { type: Type.STRING },
+                  email: { type: Type.STRING },
+                  phone: { type: Type.STRING },
+                  description: { type: Type.STRING },
+                  nip: { type: Type.STRING },
+                  confidence: { type: Type.NUMBER }
+                },
+                required: ["name", "industry", "location", "description"]
+              }
             }
           }
+        });
+      } catch (searchError: any) {
+        if (searchError.message?.includes("429") || searchError.message?.includes("quota")) {
+          setScrapingStatus("Przekroczono limit wyszukiwania Google. Przełączanie na tryb bazy wiedzy AI...");
+          // Fallback: try without googleSearch tool
+          response = await ai.models.generateContent({
+            model,
+            contents: prompt + "\nUWAGA: Narzędzie wyszukiwania jest niedostępne, użyj swojej wewnętrznej wiedzy o firmach w tym regionie.",
+            config: {
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING },
+                    industry: { type: Type.STRING },
+                    location: { type: Type.STRING },
+                    website: { type: Type.STRING },
+                    email: { type: Type.STRING },
+                    phone: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    nip: { type: Type.STRING },
+                    confidence: { type: Type.NUMBER }
+                  },
+                  required: ["name", "industry", "location", "description"]
+                }
+              }
+            }
+          });
+        } else {
+          throw searchError;
         }
-      });
+      }
 
       setScrapingProgress(70);
       setScrapingStatus('Analizowanie pozyskanych danych...');
